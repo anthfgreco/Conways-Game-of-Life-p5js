@@ -25,25 +25,29 @@ function countNeighbours(grid, x, y) {
 let grid;
 let rows;
 let cols;
-let resolution = 8;
-let fr=30;
-let slider;
+param = {
+  resolution: 7
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  rows = int(windowHeight / resolution);
-  cols = int(windowWidth / resolution);
+  rows = int(windowHeight / param.resolution);
+  cols = int(windowWidth / param.resolution);
   grid = make2DArray(cols, rows);
-
-  //slider = createSlider(5, 60, 30);
-  //slider.position(10, 10);
-  //slider.style('width', '80px');
 
   for (let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
       grid[i][j] = floor(random(2));
     }
   }
+
+  let gui = new dat.GUI();
+  gui.add(param, "resolution", 7, 20);
+
+}
+
+function windowResized() {
+  setup();
 }
 
 function draw() {
@@ -51,11 +55,11 @@ function draw() {
 
   for (let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
-      let x = i * resolution;
-      let y = j * resolution;
+      let x = i * param.resolution;
+      let y = j * param.resolution;
       if (grid[i][j] == 1) {
         fill(255);
-        rect(x, y, resolution, resolution);
+        rect(x, y, param.resolution, param.resolution);
       }
     }
   }
@@ -80,9 +84,19 @@ function draw() {
   }
 
   grid = next;
+}
 
-  //let fr = slider.value();
-  //frameRate(fr);
-  //frameRate(20);
+function mouseClicked() {
+  x = int(mouseX/param.resolution);
+  y = int(mouseY/param.resolution);
+  console.log(x, y)
+  grid[x][y] = 1;
+  grid[(x+1)%cols][y] = 1;
+  grid[x][(y+1)%rows] = 1;
+  grid[(x+1)%cols][(y+1)%rows] = 1;
+  //console.log(int(mouseX/resolution), int(mouseY/resolution));
+}
 
+function mouseDragged() {
+  mouseClicked()
 }
