@@ -16,7 +16,10 @@ param = {
       }
     }
   },
-  "Draw Shape": "Square"
+  "Draw Shape": "Square",
+  "View Source": function() {
+    window.open("https://github.com/anthfgreco/conways-game-of-life-p5js");
+  }
 }
 bgColor = {
   r: 0,
@@ -90,8 +93,9 @@ function setup() {
   tileFolder.add(tileColor, "r", 0, 255);
   tileFolder.add(tileColor, "g", 0, 255);
   tileFolder.add(tileColor, "b", 0, 255);
-  gui.add(param, "Reset Canvas")
-  gui.add(param, "Clear Canvas")
+  gui.add(param, "Reset Canvas");
+  gui.add(param, "Clear Canvas");
+  gui.add(param, "View Source");
 }
 
 function windowResized() {
