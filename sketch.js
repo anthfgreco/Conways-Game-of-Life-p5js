@@ -3,11 +3,20 @@ let rows;
 let cols;
 
 param = {
-  "resolution": 7,
+  "Resolution": 7,
   "boolean": true,
-  "Reset Canvas" : function() {
+  "Reset Canvas": function() {
     repeatSetup();
-  }
+  },
+  "Clear Canvas": function() {
+    repeatSetup();
+    for (let i = 0; i < cols; i++) {
+      for (let j = 0; j < rows; j++) {
+        grid[i][j] = 0;
+      }
+    }
+  },
+  "Draw Shape": "Square"
 }
 bgColor = {
   r: 0,
@@ -45,13 +54,19 @@ function countNeighbours(grid, x, y) {
 
 function repeatSetup() {
   createCanvas(windowWidth, windowHeight);
-  rows = int(windowHeight / param.resolution);
-  cols = int(windowWidth / param.resolution);
+  rows = int(windowHeight / param.Resolution);
+  cols = int(windowWidth / param.Resolution);
   grid = make2DArray(cols, rows);
 
   for (let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
-      grid[i][j] = floor(random(2));
+      randNum = random(10);
+      if (randNum > 9) {
+        grid[i][j] = 1
+      }
+      else {
+        grid[i][j] = 0
+      }
     }
   }
 }
@@ -60,9 +75,13 @@ function setup() {
   repeatSetup();
 
   let gui = new dat.GUI();
-  gui.add(param, "resolution", 7, 20);
+  gui.add(param, "Resolution", 5, 20);
   //gui.add(param, "boolean");
-  gui.add(param, "Reset Canvas");
+  gui.add(param, "Draw Shape", { 
+    'Square': 'Square', 
+    'Glider': 'Glider', 
+    'Light Spaceship': 'Light Spaceship',
+    'Heavy Spaceship': 'Heavy Spaceship'});
   let bgFolder = gui.addFolder("Background Color");
   bgFolder.add(bgColor, "r", 0, 255);
   bgFolder.add(bgColor, "g", 0, 255);
@@ -71,6 +90,8 @@ function setup() {
   tileFolder.add(tileColor, "r", 0, 255);
   tileFolder.add(tileColor, "g", 0, 255);
   tileFolder.add(tileColor, "b", 0, 255);
+  gui.add(param, "Reset Canvas")
+  gui.add(param, "Clear Canvas")
 }
 
 function windowResized() {
@@ -82,11 +103,11 @@ function draw() {
 
   for (let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
-      let x = i * param.resolution;
-      let y = j * param.resolution;
+      let x = i * param.Resolution;
+      let y = j * param.Resolution;
       if (grid[i][j] == 1) {
         fill(color(tileColor.r, tileColor.g, tileColor.b));;
-        rect(x, y, param.resolution, param.resolution);
+        rect(x, y, param.Resolution, param.Resolution);
       }
     }
   }
@@ -114,14 +135,56 @@ function draw() {
 }
 
 function mouseClicked() {
-  x = int(mouseX/param.resolution);
-  y = int(mouseY/param.resolution);
-  //console.log(x, y)
-  grid[x][y] = 1;
-  grid[(x+1)%cols][y] = 1;
-  grid[x][(y+1)%rows] = 1;
-  grid[(x+1)%cols][(y+1)%rows] = 1;
-  //console.log(int(mouseX/resolution), int(mouseY/resolution));
+  x = int(mouseX/param.Resolution);
+  y = int(mouseY/param.Resolution);
+
+  //console.log(mouseX, mouseY);
+  //console.log(int(mouseX/Resolution), int(mouseY/Resolution));
+
+  // Prevent drawing when using controls
+  if ((mouseX > windowWidth-261) && (mouseY < 191)) {
+    ;
+  }
+  else if (param["Draw Shape"] == "Square") {
+    grid[x][y] = 1;
+    grid[(x+1)%cols][y] = 1;
+    grid[x][(y+1)%rows] = 1;
+    grid[(x+1)%cols][(y+1)%rows] = 1;
+  }
+  else if (param["Draw Shape"] == "Glider") {
+    grid[x][y] = 1;
+    grid[x+1][y+1] = 1;
+    grid[x+2][y] = 1;
+    grid[x+2][y-1] = 1;
+    grid[x+2][y+1] = 1;
+  }
+  else if (param["Draw Shape"] == "Light Spaceship") {
+    grid[x][y] = 1;
+    grid[x+2][y] = 1;
+    grid[x][y+3] = 1;
+    grid[x+1][y+4] = 1;
+    grid[x+2][y+4] = 1;
+    grid[x+3][y+4] = 1;
+    grid[x+3][y+1] = 1;
+    grid[x+3][y+2] = 1;
+    grid[x+3][y+3] = 1;
+    grid[x+3][y+4] = 1;
+  }
+  else if (param["Draw Shape"] == "Heavy Spaceship") {
+    grid[x][y] = 1;
+    grid[x-1][y+2] = 1;
+    grid[x-1][y+3] = 1;
+    grid[x][y+5] = 1;
+    grid[x+1][y+6] = 1;
+    grid[x+2][y+6] = 1;
+    grid[x+3][y+6] = 1;
+    grid[x+2][y] = 1;
+    grid[x+3][y+1] = 1;
+    grid[x+3][y+2] = 1;
+    grid[x+3][y+3] = 1;
+    grid[x+3][y+4] = 1;
+    grid[x+3][y+5] = 1;
+  }
 }
 
 function mouseDragged() {
